@@ -1,0 +1,196 @@
+/* ProductModification.css */
+.product-title {
+    color: #4a5568;
+    font-weight: normal;
+  }
+  
+  .main-card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .info-title {
+    color: #3182ce;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .image-container {
+    margin-bottom: 1rem;
+  }
+  
+  .product-image {
+    width: 100%;
+    border-radius: 0.5rem;
+  }
+  
+  .change-image-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #4a5568;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+  }
+  
+  .change-image-btn:hover {
+    background-color: #fff;
+  }
+  
+  .edit-group {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-right: 1.5rem;
+  }
+  
+  .product-name {
+    font-size: 1.25rem;
+    color: #2d3748;
+    margin-bottom: 0;
+    font-weight: 500;
+  }
+  
+  .product-description {
+    color: #718096;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+  }
+  
+  .edit-icon {
+    color: #a0aec0;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  
+  .edit-group:hover .edit-icon {
+    opacity: 1;
+  }
+  
+  .custom-input,
+  .custom-select {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .custom-input:focus,
+  .custom-select:focus {
+    border-color: #3182ce;
+    box-shadow: none;
+  }
+  
+  .approval-status {
+    font-size: 0.875rem;
+  }
+  
+  .status-label {
+    color: #4a5568;
+  }
+  
+  .status-value {
+    color: #d69e2e;
+    margin-left: 0.5rem;
+  }
+  
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .save-btn {
+    background-color: #3182ce;
+    border: none;
+  }
+  
+  .save-btn:hover {
+    background-color: #2c5282;
+  }
+  
+  .disable-btn,
+  .delete-btn {
+    color: #e53e3e;
+    border-color: #e53e3e;
+    background-color: transparent;
+  }
+  
+  .disable-btn:hover,
+  .delete-btn:hover {
+    background-color: #fff5f5;
+    border-color: #e53e3e;
+    color: #e53e3e;
+  }
+  
+  .info-icon {
+    color: #3182ce;
+  }
+  
+  .subproducts-section {
+    margin-top: 2rem;
+  }
+  
+  .subproducts-title {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  
+  .storage-card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+  }
+  
+  .storage-image {
+    border-radius: 0.5rem;
+  }
+  
+  .storage-title {
+    font-size: 0.875rem;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+  }
+  
+  .original-price {
+    color: #718096;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .final-price {
+    color: #3182ce;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+  
+  .add-product-card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    height: 100%;
+    min-height: 200px;
+  }
+  
+  .add-product-btn {
+    padding: 0.75rem;
+    border: 2px dashed #e2e8f0;
+    border-radius: 0.5rem;
+    color: #a0aec0;
+    transition: all 0.2s;
+  }
+  
+  .add-product-btn:hover {
+    border-color: #3182ce;
+    color: #3182ce;
+  }
