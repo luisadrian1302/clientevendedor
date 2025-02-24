@@ -1,0 +1,11 @@
+.bg-active td{
+    background: aliceblue!important;
+}
+.listelement:hover{
+    cursor: pointer;
+
+}
+.listelement:hover td{
+    background: rgb(237, 243, 248)!important;
+
+}

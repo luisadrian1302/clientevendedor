@@ -6,6 +6,7 @@ const types = {
     infoGeneral: '(user) infoGeneral',  
     updatedProfile: '(user) updatedProfile',  
     updatedPassowrd: '(user) updatedPassowrd',  
+    crearProducto: '(product) crearProducto',  
 
 
 }

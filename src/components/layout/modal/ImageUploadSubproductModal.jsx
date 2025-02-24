@@ -1,9 +1,9 @@
 // ImageUploadModal.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
-const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
+const ImageUploadSubproductModal = ({ show, onHide, onSave, currentImage }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(currentImage || '');
   const [crop, setCrop] = useState();
@@ -27,24 +27,27 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
     );
   };
 
+  useEffect(() => {
+    if (show == true) {
+      handleFileSelect(currentImage)
+    }
+  }, [show])
+  
   // Manejador de carga de archivo
   const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-        setIsEditing(true);
-      };
-      reader.readAsDataURL(file);
-    }
+    
+      
+    
+    setPreview(e);
+    setIsEditing(true);
+     
+    
   };
 
   // Manejador cuando la imagen se carga
   const onImageLoad = (e) => {
     const { width, height } = e.currentTarget;
-    setCrop(centerAspectCrop(width, height, 16 / 9));
+    setCrop(centerAspectCrop(width, height, 10 / 8));
   };
 
   // Función para obtener la imagen recortada
@@ -78,9 +81,11 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
 
   // Manejador para guardar la imagen
   const handleSave = async () => {
+    console.log(crop, selectedFile);
+    
     if (isEditing && crop) {
       const croppedBlob = await getCroppedImg();
-      const croppedFile = new File([croppedBlob], selectedFile.name, {
+      const croppedFile = new File([croppedBlob], "img.jpg", {
         type: 'image/jpeg',
       });
       onSave(croppedFile);
@@ -100,7 +105,7 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">
-              {currentImage ? 'Actualizar' : 'Subir'} Imagen de Portada
+              Actualizar imagen Producto
             </h5>
             <button
               type="button"
@@ -112,12 +117,12 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
           
           <div className="modal-body">
             <div className="mb-3">
-              <input
+              {/* <input
                 type="file"
                 className="form-control"
                 accept="image/*"
                 onChange={handleFileSelect}
-              />
+              /> */}
             </div>
 
             {preview && (
@@ -126,7 +131,7 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
                   <ReactCrop
                     crop={crop}
                     onChange={(c) => setCrop(c)}
-                    aspect={16 / 9}
+                    aspect={10 / 9}
                   >
                     <img
                       ref={imgRef}
@@ -170,7 +175,6 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
               type="button"
               className="btn btn-primary"
               onClick={handleSave}
-              disabled={!selectedFile}
             >
               Guardar
             </button>
@@ -182,4 +186,4 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
   );
 };
 
-export default ImageUploadModal;
+export default ImageUploadSubproductModal;

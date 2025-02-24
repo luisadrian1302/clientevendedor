@@ -10,6 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { actualizarImagenPerfil, actualizarInformacionGeneral, actualizarPassword } from '../../../actions/UserAction';
 import UserImageModal from '../../layout/modal/UserImageModal';
 import { HeaderProfile } from '../../layout/componentes/HeaderProfile';
+import { cerrarSesionAuth } from '../../../actions/AuthAction';
+import { verificarVendedor } from '../../../helper/isVendedor';
 
 export const Profile = () => {
 
@@ -54,6 +56,7 @@ export const Profile = () => {
     };
 
     useEffect(() => {
+        
 
         const obtenerUsuario = async () => {
 
@@ -95,6 +98,7 @@ export const Profile = () => {
             }
         }
 
+     
         obtenerUsuario();
     }, [])
 

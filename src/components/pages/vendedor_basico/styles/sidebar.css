@@ -1,0 +1,25 @@
+#sidevar{
+    z-index: 1000;
+    height: auto;
+}
+
+#sideba1{
+    display: flex ;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    #sidevar{
+        height: 50px;
+        width: 100%!important;
+        overflow: scroll;
+    }
+    #container{
+        display: block!important;
+    }
+    
+    
+    
+}

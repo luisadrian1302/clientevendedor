@@ -1,49 +1,101 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { verificarVendedor } from '../../../helper/isVendedor'
 import { Link, useNavigate } from 'react-router-dom'
 import { AlertTriangle, FileText, Home, MessageCircle, Package, PlusCircle, ShoppingBag, Tag } from 'lucide-react';
 import { Button, Col, Container, FormSelect, Row } from 'react-bootstrap';
 import { ProductCard } from '../../layout/componentes/productCard';
-import { SidebarVendedor } from '../../SidebarVendedor';
+import axios from 'axios';
+import { URLAPI } from '../../../url';
+import { cerrarSesionAuth } from '../../../actions/AuthAction';
 
 export const Productos = () => {
 
     const navegate = useNavigate();
+    const [products, setproducts] = useState([])
+    const [productsMemory, setproductsMemory] = useState([])
+    const effectRun = useRef(false);
+    
+    
 
     useEffect(() => {
 
-        async function getUser() {
-
-            let isvendedor = await verificarVendedor(localStorage.getItem("token"));
-
-            console.log(isvendedor);
+        if (!effectRun.current) {
+            effectRun.current = true;
+         }else{
 
 
-            if (!isvendedor) {
-                navegate("../")
-            }
-        }
+           
+     
+     
+             async function getProducts() {
+                 try {
+                     let token = localStorage.getItem("token");
+                     const { data } = await axios.get(`${URLAPI}/product/verProductosPorUsuario`, {
+                         headers: {
+                             Authorization: `Bearer ${token}`
+                         }
+                     })
+                     setproducts(data)
+                     setproductsMemory(data)
+                     console.log(products);
+                     
+                 } catch (error) {
+                     
+                 }
+     
+               
+                 
+             }
+             
+     
+             getProducts();
+         }
 
-        getUser();
+        return () => {
+            setproducts([])
+          }
     }, [])
 
-    const products = [
-        {
-            image: "https://via.placeholder.com/150",
-            title: "iPhone 8 Plus 256 GB",
-            price: { original: 2210, discounted: 1700 },
-            discount: 30,
-            colors: ["#fff", "#ffb800", "#000"],
-        },
-        // Agrega más productos según sea necesario
-    ];
+    function filterValueFunc(e){
+
+        let opt = e.target.value;
+    
+        // buscar
+        
+    
+        let filterValue = productsMemory.filter(element => {
+    
+          if (element.titular.includes(opt) || element.descripcionGeneral.includes(opt) ) {
+            return element;
+          }
+        })
+    
+        
+    
+        setproducts(filterValue);
+    
+        
+    
+      }
+
+    // const products = [
+    //     {
+    //         image: "https://via.placeholder.com/150",
+    //         title: "iPhone 8 Plus 256 GB",
+    //         price: { original: 2210, discounted: 1700 },
+    //         discount: 30,
+    //         colors: ["#fff", "#ffb800", "#000"],
+    //     },
+    //     // Agrega más productos según sea necesario
+    // ];
 
     return (
         <Container fluid>
+            <div className="container">
+
 
             <Row>
                
-               <SidebarVendedor/>
 
                 <Col className='p-2'>
                      <h2 className="text-xl font-semibold my-3">Productos</h2>
@@ -55,17 +107,13 @@ export const Productos = () => {
                                 type="search" 
                                 class="form-control" 
                                 placeholder="Buscar"
+                                onChange={(e) => filterValueFunc(e)}
                             />
                         </div>
                         
-                        <select class="form-select " style={{width: "200px", background: "transparent" }}>
-                            <option selected>Ordenar por</option>
-                            <option value="price-asc">Precio: Menor a Mayor</option>
-                            <option value="price-desc">Precio: Mayor a Menor</option>
-                            <option value="name">Nombre</option>
-                        </select>
+                      
                         
-                        <span class="text-secondary">Mis productos: 3</span>
+                        <span class="text-secondary">Mis productos: {products.length}</span>
                     </div>
 
                     <Col style={{ background: "white" }} className='p-2'>
@@ -81,16 +129,19 @@ export const Productos = () => {
                         </Row>
 
 
-                        <Row xs={1} sm={2} md={3}>
+                        <Row xs={1} sm={3} md={4}>
                             {products.map((product, index) => (
+                                
                                 <Col key={index}>
-                                    <ProductCard {...product} />
+                                    <ProductCard {...product}  navegate={navegate}/>
                                 </Col>
                             ))}
                         </Row>
                     </Col>
                 </Col>
             </Row>
+            </div>
+
         </Container>
     )
 }

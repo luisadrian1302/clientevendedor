@@ -1,11 +1,11 @@
 // ImageUploadModal.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
-const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
+const MultipleImageUpload = ({ show, onHide, onSave, currentImage }) => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [preview, setPreview] = useState(currentImage || '');
+  const [preview, setPreview] = useState([]);
   const [crop, setCrop] = useState();
   const [isEditing, setIsEditing] = useState(false);
   const imgRef = useRef(null);
@@ -29,23 +29,30 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
 
   // Manejador de carga de archivo
   const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setSelectedFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result);
-        setIsEditing(true);
-      };
-      reader.readAsDataURL(file);
+    const file = e.target.files;
+    console.log(file);
+
+    setPreview([]);
+
+    
+    for (let i = 0; i < file.length; i++) {
+      const element = file[i];
+      console.log(element && element.type.startsWith('image/'));
+      
+      if (element && element.type.startsWith('image/')) {
+        setSelectedFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreview((data) =>[...data, reader.result]);
+          setIsEditing(true);
+        };
+        reader.readAsDataURL(element);
+      }
     }
   };
 
-  // Manejador cuando la imagen se carga
-  const onImageLoad = (e) => {
-    const { width, height } = e.currentTarget;
-    setCrop(centerAspectCrop(width, height, 16 / 9));
-  };
+
+  
 
   // Función para obtener la imagen recortada
   const getCroppedImg = () => {
@@ -78,16 +85,22 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
 
   // Manejador para guardar la imagen
   const handleSave = async () => {
-    if (isEditing && crop) {
-      const croppedBlob = await getCroppedImg();
-      const croppedFile = new File([croppedBlob], selectedFile.name, {
-        type: 'image/jpeg',
-      });
-      onSave(croppedFile);
-    } else if (selectedFile) {
-      onSave(selectedFile);
-    }
+    // if (isEditing && crop) {
+    //   const croppedBlob = await getCroppedImg();
+    //   const croppedFile = new File([croppedBlob], selectedFile.name, {
+    //     type: 'image/jpeg',
+    //   });
+    //   onSave(croppedFile);
+    // } else if (selectedFile) {
+      // }
+
+    onSave(preview);
     onHide();
+
+    console.log( document.querySelector("#img"));
+    
+    document.querySelector("#img").value = "";
+    setPreview([]);
   };
 
   return (
@@ -100,7 +113,7 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">
-              {currentImage ? 'Actualizar' : 'Subir'} Imagen de Portada
+              {currentImage ? 'Actualizar' : 'Subir'} Imagenes para el producto
             </h5>
             <button
               type="button"
@@ -116,46 +129,28 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
                 type="file"
                 className="form-control"
                 accept="image/*"
+                multiple
+                id='img'
                 onChange={handleFileSelect}
               />
             </div>
 
-            {preview && (
-              <div className="text-center">
-                {isEditing ? (
-                  <ReactCrop
-                    crop={crop}
-                    onChange={(c) => setCrop(c)}
-                    aspect={16 / 9}
-                  >
-                    <img
-                      ref={imgRef}
-                      src={preview}
-                      onLoad={onImageLoad}
-                      style={{ maxWidth: '100%' }}
-                      alt="Preview"
-                    />
-                  </ReactCrop>
-                ) : (
-                  <img
-                    src={preview}
-                    style={{ maxWidth: '100%' }}
-                    alt="Preview"
-                  />
-                )}
-              </div>
-            )}
+            {preview.length && 
 
-            {preview && !isEditing && (
-              <div className="text-center mt-3">
-                <button
-                  className="btn btn-outline-primary"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Editar imagen
-                </button>
+              <div className="d-flex" style={{flexWrap: "wrap"}}>
+
+
+                {preview.map(e => (
+                    <img
+                      src={e}
+                      style={{ maxWidth: '25%' , objectFit: "contain"}}
+                      alt="Preview"
+                    />                  
+                
+                ))}
               </div>
-            )}
+            }
+       
           </div>
 
           <div className="modal-footer">
@@ -182,4 +177,4 @@ const ImageUploadModal = ({ show, onHide, onSave, currentImage }) => {
   );
 };
 
-export default ImageUploadModal;
+export default MultipleImageUpload;

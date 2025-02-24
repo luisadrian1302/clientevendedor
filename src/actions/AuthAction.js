@@ -18,7 +18,7 @@ export const registrarUsuario = (datos, navigation) => {
             const data = await axios.post(`${URLAPI}/users/register`, datos);
             const usuarioDatos =await data.data;
             // dispatch(registrar())
-            if (usuarioDatos) {
+            if (data.status == 201) {
                 Swal.fire({
                     title: 'Exito!',
                     text: 'Se registró correctamente, se mando un codigo de seguridad para habilitar su cuenta',
@@ -28,13 +28,13 @@ export const registrarUsuario = (datos, navigation) => {
                     /* Read more about isConfirmed, isDenied below */
                     console.log(navigation);
 
-                    let data = {
-                        correo: usuarioDatos.email,
-                        id: usuarioDatos.id,
-                    }
-                    localStorage.setItem("datos_personales", JSON.stringify(data))
+                    // let data = {
+                    //     correo: usuarioDatos.email,
+                    //     id: usuarioDatos.id,
+                    // }
+                    // localStorage.setItem("datos_personales", JSON.stringify(data))
                     
-                    navigation("/confirmar");
+                    navigation("/login");
 
                     // actualizar el mensaje
 
@@ -190,16 +190,16 @@ export const cerrarSesionAuth = (navigate) => {
 
     return async(dispatch) => {
 
-        try {
+        
             
             // const autor =await clienteAxios.post("/autor", datos);
          
+            
+            
             localStorage.removeItem("token");
             dispatch(cerrarSesion());
-        } catch (error) {   
-            console.log(error);
-            
-        }
+            navigate("/")
+        
     }
 }
 

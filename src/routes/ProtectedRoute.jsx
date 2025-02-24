@@ -1,14 +1,34 @@
 import React, { useEffect } from 'react'
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { cerrarSesionAuth } from '../actions/AuthAction';
+import { useDispatch } from 'react-redux';
+import { verificarVendedor } from '../helper/isVendedor';
 
 export const ProtectedRoute = ({route, login, isCheckout}) => {
+
+
+    const navegate = useNavigate();
+    const dispatch = useDispatch();
     useEffect(() => {
         let isAuth = localStorage.getItem("token");
 
         // comprar estado de autenticacion.... 
         // obtener reducer para hacer la autenticacion en java
       
-    }, [])
+        async function getUser() {
+             
+          let isvendedor = await verificarVendedor(localStorage.getItem("token"));
+          
+          if (!isvendedor) {
+              console.log("close");
+              
+              dispatch(cerrarSesionAuth(navegate));
+          }
+      }
+      getUser();
+
+        
+    }, [route])
 
   return (
     <>

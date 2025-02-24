@@ -5,12 +5,13 @@ import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/esm/Button';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { verificarUsuario } from '../../actions/AuthAction';
 const Confirmacion = () => {
 
     const dispatch = useDispatch();
     const navegate = useNavigate();
+    const { token } = useParams();
   const [pin, setPin] = useState(['', '', '', '', '', '']);
   
   const handlePinChange = (index, value) => {
@@ -28,9 +29,7 @@ const Confirmacion = () => {
   };
 
   const handleSubmit = async () => {
-    let datos = JSON.parse(localStorage.getItem("datos_personales"));
-
-     let email = datos.correo;
+   
 
      let text ="";
      
@@ -39,10 +38,10 @@ const Confirmacion = () => {
      })
      const data ={
         code: text,
-        correo: email
+        correo: token
      }
      dispatch(verificarUsuario(data, navegate))
-     console.log(email, text);
+  
      
 
     

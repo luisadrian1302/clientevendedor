@@ -51,6 +51,7 @@ export const Register = () => {
                                     onSubmit={async (values, { setSubmitting }) => {
 
                                         try {
+                                            // inhabilitar boton
                                             let datos = {
                                                 "password": values.password,
                                                 "name": values.nombre,
@@ -134,7 +135,7 @@ export const Register = () => {
                                                 <p class="text-center">Al iniciar sesion aceptas los <a href="#">teminos y condiciones</a></p>
                                             </div>
                                             <div className="col-md-12 text-center ">
-                                                <button type="submit" class=" btn btn-block  w-100 mybtn btn-primary tx-tfm" disabled={isSubmitting}>Registrar</button>
+                                                <button type="submit" id='btn' class=" btn btn-block  w-100 mybtn btn-primary tx-tfm" disabled={isSubmitting}>Registrar</button>
                                             </div>
 
                                             <div className="col-md-12 ">

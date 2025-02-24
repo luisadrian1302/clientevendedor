@@ -105,7 +105,7 @@ export const Login = () => {
                                                 <p class="text-center">Al iniciar sesion aceptas los <a href="#">teminos y condiciones</a></p>
                                             </div>
                                             <div class="col-md-12 text-center ">
-                                                <button type="submit" class=" btn btn-block  w-100 mybtn btn-primary tx-tfm" disabled={isSubmitting}>Login</button>
+                                                <button type="submit" class=" btn btn-block  w-100 mybtn btn-warning tx-tfm" disabled={isSubmitting}>Login</button>
                                             </div>
 
                                             <div class="col-md-12 ">
