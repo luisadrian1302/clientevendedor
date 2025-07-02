@@ -8,7 +8,7 @@ export const mandarInfomracionGeneralProducto = (data, navegate) => {
         try {
             let token = localStorage.getItem("token");
 
-            const response = await fetch(`${URLAPI}/product/actualizarProducto`, {
+            const response = await fetch(`${URLAPI}/product/crearProducto`, {
                 method: 'POST',
                 body: data,
                 headers: {
@@ -71,7 +71,7 @@ export const actualizarInfomracionGeneralProducto = (data, navegate) => {
         try {
             let token = localStorage.getItem("token");
 
-            const response = await fetch(`${URLAPI}/product/actualizarProducto2`, {
+            const response = await fetch(`${URLAPI}/product/actualizarProducto`, {
                 method: 'POST',
                 body: data,
                 headers: {

@@ -11,7 +11,6 @@ import { actualizarImagenPerfil, actualizarInformacionGeneral, actualizarPasswor
 import UserImageModal from '../../layout/modal/UserImageModal';
 import { HeaderProfile } from '../../layout/componentes/HeaderProfile';
 import { cerrarSesionAuth } from '../../../actions/AuthAction';
-import { verificarVendedor } from '../../../helper/isVendedor';
 
 export const Profile = () => {
 
@@ -56,7 +55,7 @@ export const Profile = () => {
     };
 
     useEffect(() => {
-        
+
 
         const obtenerUsuario = async () => {
 
@@ -98,7 +97,7 @@ export const Profile = () => {
             }
         }
 
-     
+
         obtenerUsuario();
     }, [])
 
@@ -146,10 +145,6 @@ export const Profile = () => {
 
             try {
                 let token = localStorage.getItem("token")
-
-
-
-                // obtener la imagen
 
                 const response = await fetch(`${URLAPI}/users/image/${dataStatic.email}`, {
                     headers: {
@@ -212,9 +207,51 @@ export const Profile = () => {
 
             <div className="container my-4">
                 <h2 className="mb-4">Usuario</h2>
-                <HeaderProfile/>
+                <HeaderProfile />
 
                 <div className="row mt-4">
+
+
+                    {/* Perfil mobile*/}
+                    <div className="col-12 mt-lg-0 mt-2  text-center d-block d-md-none" >
+                        <div className="card p-3 " style={{ "border": "none", background: "white" }} >
+                            <div className="card-body">
+
+                                {
+                                    dataImageObject == "" ? <User size={200}></User> :
+                                        <img src={dataImageObject} id='img_profile' style={{
+                                            width: "200px",
+                                            borderRadius: "50%",
+                                            marginBottom: "10px"
+                                        }} />
+                                }
+                                {obtenerEstado()}
+
+                                {
+                                    !dataStatic ?
+                                        <h5 className="card-title">N/A</h5>
+
+                                        :
+                                        <h5 className="card-title">{dataStatic.nombre + " " + (dataStatic.apellidos == null ? "" : dataStatic.apellidos)}</h5>
+                                }
+
+                                {
+                                    !dataStatic ?
+                                        <h5 className="card-title">N/A</h5>
+
+                                        :
+                                        <p className="text-muted">{dataStatic.email}</p>
+                                }
+
+                                <button className="btn btn-primary d-block w-100" onClick={() => setShowModal(true)}>Cambiar perfil</button>
+                                <UserImageModal
+                                    show={showModal}
+                                    handleClose={() => setShowModal(false)}
+                                    onImageUpdate={handleImageUpdate}
+                                />
+                            </div>
+                        </div>
+                    </div>
                     {/* Formulario */}
                     <div className="col-md-8 " >
                         <div className="p-3 p-md-4 p-sm-3" style={{ background: "white" }}>
@@ -377,10 +414,10 @@ export const Profile = () => {
                                         const token = localStorage.getItem("token");
                                         dispatch(actualizarPassword(values, token));
                                         setSubmitting(false);
-                                       
+
                                     } catch (error) {
                                         console.log(error);
-                                        
+
                                         setSubmitting(false);
                                     }
                                 }}
@@ -430,8 +467,8 @@ export const Profile = () => {
 
                     </div>
 
-                    {/* Perfil */}
-                    <div className="col-md-4 mt-lg-0 mt-2  text-center" >
+                    {/* Perfil desktop*/}
+                    <div className="col-md-4 mt-lg-0 mt-2  text-center d-none d-md-block" >
                         <div className="card p-3 " style={{ "border": "none", background: "white" }} >
                             <div className="card-body">
 
@@ -439,12 +476,11 @@ export const Profile = () => {
                                     dataImageObject == "" ? <User size={200}></User> :
                                         <img src={dataImageObject} id='img_profile' style={{
                                             width: "200px",
+                                            maxWidth: "100%",
                                             borderRadius: "50%",
                                             marginBottom: "10px"
                                         }} />
                                 }
-
-
                                 {obtenerEstado()}
 
                                 {

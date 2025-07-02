@@ -1,9 +1,9 @@
-import { AlertCircle, Edit, Pencil, Plus, X } from 'lucide-react'
+import { AlertCircle, Edit, Pencil, Plus, Trash, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import './styles/ProductModification.css';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import axios from 'axios';
-import { URLAPI } from '../../../url';
+import { URLAPI, URLAPI_SUBPRODUCT_PUBLIC, URLAPI_SUBPRODUCT_SELLER } from '../../../url';
 import Swal from 'sweetalert2';
 import "../../../styles/product.css"
 import { useDispatch } from 'react-redux';
@@ -261,7 +261,7 @@ export const SubproductoUpdate = () => {
         try {
             let token = localStorage.getItem("token");
 
-            const response = await fetch(`${URLAPI}/SubProduct/edit`, {
+            const response = await fetch(`${URLAPI_SUBPRODUCT_SELLER}/edit`, {
                 method: 'PUT',
                 body: formdata,
                 headers: {
@@ -366,7 +366,7 @@ export const SubproductoUpdate = () => {
         let saveImagenes = [];
         for (let i = 0; i < imagenes.length; i++) {
             const element = imagenes[i];
-            const url = URLAPI+"/SubProduct/image/"+element;
+            const url = URLAPI_SUBPRODUCT_PUBLIC+"/image/"+element;
             saveImagenes.push(url)
         }
         setImagenes(saveImagenes);
@@ -377,7 +377,8 @@ export const SubproductoUpdate = () => {
         async function traerProducto() {
             try {
                 let token = localStorage.getItem("token")
-                const { data } = await axios.get(URLAPI + "/SubProduct/getById/" + id, {
+                const { data } = await axios.get(URLAPI_SUBPRODUCT_SELLER + "/getById/" + id, {
+
                     headers: {
                         Authorization: "Bearer " + token
                     }
@@ -513,6 +514,11 @@ export const SubproductoUpdate = () => {
         setelement(element);
         setindexEdit(id);
     }
+    function eliminarDescuento(){
+        setDescuento(null);
+    }
+    
+  
 
     
     return (
@@ -573,7 +579,7 @@ export const SubproductoUpdate = () => {
                                                     alt="Product"
                                                     className="img-fluid rounded product-image"
                                                     style={{
-                                                        objectFit: "cover",
+                                                        objectFit: "contain",
                                                         height: "500px"
                                                     }}
                                                 />
@@ -618,7 +624,13 @@ export const SubproductoUpdate = () => {
                                             <p>colocar precio</p>
 
                                             {descuento != null ?
-                                                <p>precio descuento: ${Math.round((inforacionGeneral.precio - (inforacionGeneral.precio * (descuento.porcentajeDescuento / 100))) * 100) / 100}</p>
+                                                <>
+                                                 
+                                                
+                                                    <p>precio descuento: ${Math.round((inforacionGeneral.precio - (inforacionGeneral.precio * (descuento.porcentajeDescuento / 100))) * 100) / 100}</p>
+                                                    <button type='button'  onClick={(e) => eliminarDescuento()} className='btn mb-3 text-danger p-0 mt-0'><Trash/></button>
+
+                                                </>
                                                 : ""}
                                             <h3 className="product-name" style={{ width: "100%" }}>
                                                 <input type="text" className='non-input-style' value={inforacionGeneral.precio} placeholder='$00.00'
@@ -799,7 +811,7 @@ export const SubproductoUpdate = () => {
             <DescuentoModal show={showModal} onClose={() => setShowModal(false)} onSave={handleSaveDescuento} />
 
             <CaracteristicasModal show={showModalAtributo} onClose={() => oncloseCaracteristicas()} onSave={handleSaveCaracteristicas}
-                idCategoria={producto.subcategoria ? producto.subcategoria.id : 0} caracteristica={caracteristica} 
+                idProduct={producto.id ? producto.id : 1} caracteristica={caracteristica} 
                 elementEdit={element}/>
 
             <Descripcion_producto handleClose={handleCloseDesc} show={showDesc} setText={setInformacionGeneral}

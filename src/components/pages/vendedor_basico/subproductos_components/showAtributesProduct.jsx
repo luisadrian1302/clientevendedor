@@ -1,6 +1,7 @@
 import React from 'react'
 
 export const ShowAtributesProduct = ({caracteristicas, id}) => {
+    
   return (
     <>
     <div className="d-flex" >
@@ -12,7 +13,7 @@ export const ShowAtributesProduct = ({caracteristicas, id}) => {
                         <div className='showItems' style={{ backgroundColor: e.valor }}>
 
                         </div>
-
+ 
                     </div>
                 </> : null}
                 {e.tipoPropiedad == "boton" ?

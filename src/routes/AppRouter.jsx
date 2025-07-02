@@ -23,6 +23,11 @@ import { ProductSubcategoriaCreate } from "../components/pages/vendedor_basico/P
 import { SubproductoUpdate } from "../components/pages/vendedor_basico/SubproductoUpdate"
 import { SubproductIndexScreen } from "../components/pages/vendedor_basico/subproductos/SubproductIndexScreen.jsx"
 import { DescuentosIndexScreen } from "../components/pages/vendedor_basico/descuentos/DescuentosIndexScreen.jsx"
+import NotificacionesPage from "../components/pages/Notificaciones.jsx"
+import { DetailsProduct } from "../components/pages/DetailsProduct.jsx"
+import { DireccionesCuentas } from "../components/pages/Profile/DireccionesCuentas.jsx"
+import { CrearDireccion } from "../components/pages/Profile/CrearDireccion.jsx"
+import { EditarDireccion } from "../components/pages/Profile/EditarDireccion.jsx"
 
 const AppRouter = props => {
 
@@ -60,13 +65,18 @@ const AppRouter = props => {
                          <Route path="/login" element={<Login />} />  
                          <Route path="/register" element={<Register />} />  
                          <Route path="/confirmar/:token" element={<Confirmacion />} />  
+                         <Route path="/product/:id" element={<DetailsProduct />} />  
                          
 
                          {/* <Route path="/example" element={<ProtectedRoute login={isAuth} route={<ProtectedExample/>}/>} />   */}
                          <Route path="/profile" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<Profile/>}/>} />  
                          <Route path="/seguridad" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<Seguridad/>}/>} />  
+                         <Route path="/Direcciones-y-cuentas" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<DireccionesCuentas/>}/>} />  
+                         <Route path="/crear-direccion" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<CrearDireccion/>}/>} />  
+                         <Route path="/actualizar-direccion/:id" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<EditarDireccion/>}/>} />  
                          <Route path="/Options" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<Options/>}/>} />  
-
+                         <Route path="/notificaciones" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<NotificacionesPage/>}/>} />  
+                         
                          {/* vendedor ruta */}
                          <Route path="/vendedorProductos" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<SidebarVendedor  component={<Productos/>}/> }/>} />  
                          <Route path="/products/create" element={<ProtectedRoute login={isAuth} isCheckout={isCheckout} route={<SidebarVendedor component={<ProductCreate/>}/>}/>} />  
@@ -78,14 +88,7 @@ const AppRouter = props => {
 
                          
 
-                    </Route>
-
-
-                    
-                    
-
-
-                    
+                    </Route> 
                 </Routes>
 
             </BrowserRouter>

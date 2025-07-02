@@ -1,4 +1,4 @@
-import { LogOut, ShoppingCart, User } from 'lucide-react';
+import { Bell, LogOut, ShoppingCart, User } from 'lucide-react';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -10,6 +10,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { cerrarSesionAuth } from '../../actions/AuthAction';
 import { useEffect, useState } from 'react';
 import { URLAPI } from '../../url';
+import { actualizarProductos, countNotification } from '../../actions/notificationsAction';
+import { connect, disconnect } from '../../webSockets/connect';
 
 function Header({isAuth}) {
 
@@ -17,6 +19,7 @@ function Header({isAuth}) {
   const navigate = useNavigate();
 
   const {userData, isUpdatedProfile} = useSelector(re => re.AuthReducer);
+  const {countNotifications} = useSelector(re => re.notificationsReducer);
 
   const [profile, setProfile] = useState("");
   const cerrarSesion = () => {
@@ -26,10 +29,33 @@ function Header({isAuth}) {
   }
 
   useEffect(() => {
+      
+      
+      if (Object.entries(userData).length ) {  
+        let token = localStorage.getItem("token");
+        connect((message) => {
+  
+          let msg = JSON.parse(message);
+          if (msg.message == "updateDelete") {
+            console.log("acualizarProductos");
+            
+            dispatch(actualizarProductos());
+          }
+
+          dispatch(countNotification())
+          // setMessages((prev) => [...prev, message]);
+        });
+      }
+    
+  
+      return () => disconnect(); 
+  }, [userData])
+    
+
+  useEffect(() => {
 
     let token = localStorage.getItem("token");
 
-    console.log(userData);
 
     let username = "";
     if (userData.email) {
@@ -46,7 +72,6 @@ function Header({isAuth}) {
               Authorization: `Bearer ${token}`
             }
         });
-        console.log(response);
         
         if (!response.ok) throw new Error('Image not found');                
         const blob = await response.blob();
@@ -54,7 +79,6 @@ function Header({isAuth}) {
 
         setProfile(imageUrl)
         
-        console.log(imageUrl);
       } catch (error) {
         
         setProfile("")
@@ -64,6 +88,7 @@ function Header({isAuth}) {
      
     }
     obtenerData();
+    dispatch(countNotification())
     
   }, [userData, isUpdatedProfile])
   
@@ -114,6 +139,13 @@ function Header({isAuth}) {
             
             <>
              <Nav.Link href="#action2"> <Link className='text-dark nav-link p-0' to={'/compras'}>Mis compras</Link> </Nav.Link>
+             <Nav.Link href="#action2"> 
+              <Link className='text-dark nav-link p-0' id='bell' to={'/notificaciones'}>
+              {countNotifications  ? <div id="isNotification"></div> : null}
+
+              <Bell></Bell>
+              
+             </Link> </Nav.Link>
 
 
               {profile == "" ? 

@@ -1,9 +1,9 @@
-import {  Pencil, Plus, X } from 'lucide-react'
+import {  Pencil, Plus, Trash, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import './styles/ProductModification.css';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import axios from 'axios';
-import { URLAPI } from '../../../url';
+import { URLAPI, URLAPI_SUBPRODUCT_SELLER } from '../../../url';
 import Swal from 'sweetalert2';
 import "../../../styles/product.css"
 import { useDispatch } from 'react-redux';
@@ -17,6 +17,8 @@ import { ShowItems } from './subproductos_components/ShowItems';
 import { Descripcion_producto } from '../../layout/modal/Descripcion_producto';
 import { CaracteristicaTable } from '../../layout/modal/CaracteristicaTable';
 import { validarValor } from './helpers/validaciones';
+import { ClonarSubproducto } from '../../layout/modal/ClonarSubproducto';
+import { caracteristicaToCaractertisticaModal } from '../../../helper/gettValues';
 export const ProductSubcategoriaCreate = () => {
 
 
@@ -36,6 +38,7 @@ export const ProductSubcategoriaCreate = () => {
 
 
     const [showUPModal, setUPShowModal] = useState(false);
+    const [showCloneModal, setshowCloneModal] = useState(false);
     const [indice, setIndece] = useState(0);
     const [currentImage, setCurrentImage] = useState(null);
     const [croppedImageFile, setcroppedImageFile] = useState([]);
@@ -80,6 +83,54 @@ export const ProductSubcategoriaCreate = () => {
     const handleCloseCat = () => setShowCat(false);
     const handleShowCat = () => setShowCat(true);
 
+
+    const handleCloseCloneModal = () => {
+        // logica de programacion
+
+
+        setshowCloneModal(false)
+    };
+    const handleShowCloneModal = () => setshowCloneModal(true);
+
+    const onsaveCloneModal = (data) =>{
+        console.log(data);
+        setshowCloneModal(false)
+
+
+        inforacionGeneral.precio = data.precio;
+        inforacionGeneral.peso = data.pesoProducto;
+        inforacionGeneral.ancho = data.tamañoAncho;
+        inforacionGeneral.cantidad = data.stock ? data.stock  :0;
+        inforacionGeneral.descripcion = data.descripcion
+        inforacionGeneral.largo = data.tamañoAlto
+        inforacionGeneral.grosor = data.grosor
+
+        setInformacionGeneral(inforacionGeneral);
+
+        if (data.descuento) {
+            setDescuento(data.descuento);
+        }
+        castsetcaracteristicaAll(data.caracteristicasTable);
+
+        setcaracteristica(caracteristicaToCaractertisticaModal(data.caracteristicas))
+    }
+
+
+    function castsetcaracteristicaAll(data){
+        let caracteristicas = [];
+        for (let i = 0; i < data.length; i++) {
+            let car = {};
+            let element = data[i];
+            car.atributo = element.atributo;
+            car.valor = element.valor;
+
+            caracteristicas.push(car);            
+        }
+
+        setcaracteristicaAll(caracteristicas);
+
+    }
+    
 
 
 
@@ -236,7 +287,7 @@ export const ProductSubcategoriaCreate = () => {
         try {
             let token = localStorage.getItem("token");
 
-            const response = await fetch(`${URLAPI}/SubProduct/subir`, {
+            const response = await fetch(`${URLAPI_SUBPRODUCT_SELLER}/subir`, {
                 method: 'POST',
                 body: formdata,
                 headers: {
@@ -272,27 +323,6 @@ export const ProductSubcategoriaCreate = () => {
             
         }
 
-
-        //obtener los valores 
-
-       
-        // console.log(categoriaid, currentImage);
-
-
-        // let formdata = new FormData();
-
-
-
-
-        // formdata.append("titular", inforacionGeneral.titular);
-        // formdata.append("descripcion", inforacionGeneral.descripcion);
-        // formdata.append("categoriaid", inforacionGeneral.idCategoria);
-        // formdata.append("subcategoriaid", inforacionGeneral.idsubCategoria);
-
-        // // Crear un nuevo archivo a partir del blob
-
-        // formdata.append('image', croppedImageFile);
-        // dispatch(mandarInfomracionGeneralProducto(formdata, navegate))
 
 
     }
@@ -416,6 +446,9 @@ export const ProductSubcategoriaCreate = () => {
 
     }
 
+    function eliminarDescuento(){
+        setDescuento(null);
+    }
     
     return (
         <>
@@ -438,10 +471,21 @@ export const ProductSubcategoriaCreate = () => {
 
                         <div className="card main-card">
                             <div className="card-body">
-                            <div className="pb-2">
-                                    <Link className=' text-secondary text-decoration-none hover-primary '
-                                    to={"/products/edit/"+producto.id}>Producto / </Link>
-                                    <Link className='text-primary text-decoration-none hover-primary'>subproducto</Link>
+                                <div className="pb-2" style={{
+                                    display: "flex",
+                                    justifyContent: "space-between"
+                                }}>
+                                    <div className="">
+                                        <Link className=' text-secondary text-decoration-none hover-primary '
+                                        to={"/products/edit/"+producto.id}>Producto / </Link>
+                                        <Link className='text-primary text-decoration-none hover-primary'>subproducto</Link>
+
+                                    </div>
+
+
+                                    <div className="">
+                                        <button className='btn btn-warning' onClick={(e) => handleShowCloneModal()} type='button'>  Clonar subproducto </button>
+                                    </div>
                                 </div>
                                 <h5 className="info-title">Información general del subproducto</h5>
 
@@ -455,12 +499,14 @@ export const ProductSubcategoriaCreate = () => {
                                                         src={e ? e : "https://picsum.photos/seed/picsum/500/300"}
                                                         alt="Product"
                                                         className="img-fluid  py-1"
-                                                        style={{ width: "60px", height: "60px", objectFit: "cover" }}
+                                                        style={{ width: "60px", height: "60px", objectFit: "contain" }}
                                                         onClick={(e) => mostrarImagenSeleccionada(i)}
                                                     />
                                                 ))}
 
                                                 <div className="card-body d-flex justify-content-center align-items-center" style={{ width: "50px" }}>
+
+                                                    
                                                     <button className="btn add-product-btn" onClick={() => setUPShowModalMultiple(true)}
                                                     //  onClick={crearSubcategoria}
                                                     >
@@ -475,13 +521,20 @@ export const ProductSubcategoriaCreate = () => {
                                                     alt="Product"
                                                     className="img-fluid rounded product-image"
                                                     style={{
-                                                        objectFit: "cover",
+                                                        objectFit: "contain",
                                                         height: "500px"
                                                     }}
                                                 />
-                                                <button className="btn change-image-btn" onClick={() => setUPShowModal(true)}>
-                                                    Cambiar imagen principal
-                                                </button>
+
+                                                {
+                                                        currentImage != null ? 
+
+                                                        <button className="btn change-image-btn" onClick={() => setUPShowModal(true)}>
+                                                            Cambiar imagen principal
+                                                        </button>
+                                                        : null
+                                                    }
+                                               
                                                 {currentImage != null ? <div className="d-flex w-100" style={{ justifyContent: "space-between" }}>
                                                     <a href='#' className='text-decoration-none ' onClick={rehacerCambios}>Rehacer cambios </a>
                                                     <a href='#' className='text-decoration-none text-danger' onClick={EliminarImagen}>Eliminar imagen</a>
@@ -520,7 +573,11 @@ export const ProductSubcategoriaCreate = () => {
                                             <p>colocar precio</p>
 
                                             {descuento != null ?
-                                                <p>precio descuento: ${Math.round((inforacionGeneral.precio - (inforacionGeneral.precio * (descuento.porcentajeDescuento / 100))) * 100) / 100}</p>
+                                            <>
+                                            <p>precio descuento: ${Math.round((inforacionGeneral.precio - (inforacionGeneral.precio * (descuento.porcentajeDescuento / 100))) * 100) / 100}</p>
+                                            <button type='button'  onClick={(e) => eliminarDescuento()} className='btn mb-3 text-danger p-0 mt-0'><Trash/></button>
+                                            
+                                            </>
                                                 : ""}
                                             <h3 className="product-name" style={{ width: "100%" }}>
                                                 <input type="text" min={1} className='non-input-style' value={inforacionGeneral.precio} placeholder='$00.00'
@@ -568,7 +625,7 @@ export const ProductSubcategoriaCreate = () => {
                                         </div>
 
                                         <div className="col-md-6 ">
-                                            <p>Grosor: (en CM)</p>
+                                            <p>Grosor: (en mm)</p>
                                             <input type="text" min={1} className='form-control' value={inforacionGeneral.grosor} placeholder='0'
                                                 onChange={(event) => validarValor(event, "grosor", setInformacionGeneral) } />
                                         </div>
@@ -703,7 +760,7 @@ export const ProductSubcategoriaCreate = () => {
             <DescuentoModal show={showModal} onClose={() => setShowModal(false)} onSave={handleSaveDescuento} />
 
             <CaracteristicasModal show={showModalAtributo} onClose={() => oncloseCaracteristicas()} onSave={handleSaveCaracteristicas}
-                idCategoria={producto.subcategoria ? producto.subcategoria.id : 0} caracteristica={caracteristica}
+                idProduct={producto.id ? producto.id : 0} caracteristica={caracteristica}
                 elementEdit={element} />
 
             <Descripcion_producto handleClose={handleCloseDesc} show={showDesc} setText={setInformacionGeneral}
@@ -711,6 +768,8 @@ export const ProductSubcategoriaCreate = () => {
 
             <CaracteristicaTable handleClose={handleCloseCat} show={showCat}
                 sendInformacion={sendCaractertisticaTabla} />
+
+            <ClonarSubproducto onClosevalue={handleCloseCloneModal} show={showCloneModal} onsave={onsaveCloneModal} id={id}/>
 
 
 

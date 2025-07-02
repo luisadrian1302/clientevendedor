@@ -21,7 +21,13 @@ export const HeaderProfile = () => {
                 }
             }
     
-            document.querySelector("#"+route).classList.add("active_url") 
+            if (route == "crear-direccion") {
+                document.querySelector("#Direcciones-y-cuentas").classList.add("active_url") 
+                
+            }else{
+
+                document.querySelector("#"+route).classList.add("active_url") 
+            }
         } catch (error) {
             
         }
@@ -48,9 +54,10 @@ export const HeaderProfile = () => {
                     </Link>
                 </li>
                 <li className="nav-item ">
-                    <a className="nav-link text-dark url_profile" id='addresses' href="#addresses">
-                        Direcciones y cuentas
-                    </a>
+                    <Link className="nav-link text-dark url_profile" id='Direcciones-y-cuentas' to="../Direcciones-y-cuentas">
+                        
+                         Direcciones y Cuentas
+                    </Link>
                 </li>
                 <li className="nav-item ">
                     <Link  className="nav-link text-dark url_profile" id='options' to="../options">

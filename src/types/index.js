@@ -8,6 +8,10 @@ const types = {
     updatedPassowrd: '(user) updatedPassowrd',  
     crearProducto: '(product) crearProducto',  
 
+    actualizarProductos: '(notification) actualizarProductos',
+    actualizarNotificacion: '(notification) actualizarNotificacion'
+
+
 
 }
 

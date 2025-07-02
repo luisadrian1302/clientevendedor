@@ -1,33 +1,41 @@
 import axios from 'axios';
-import { AlignLeft, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, MoveLeft, PlusCircle, Upload } from 'lucide-react';
+import { AlignLeft, ArrowLeft, ArrowRight, BadgeMinus, BadgePercent, ChevronLeft, ChevronRight, Edit, MoveLeft, PlusCircle, Search, Trash, Upload } from 'lucide-react';
 import React, { useEffect, useRef } from 'react'
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { data, Link, useNavigate } from 'react-router-dom';
 import { usePagination, useTable } from 'react-table';
 import { URLAPI } from '../../../../url';
 import { useState } from 'react';
-import AddSubproductModal from '../../../layout/modal/AddSubproductModal';
 import Swal from 'sweetalert2';
 import { verificarVendedor } from '../../../../helper/isVendedor';
-import PublicarSubProductos from '../../../layout/modal/PublicarSubProductos';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { ToastContainer, toast } from 'react-toastify';
-import AddDescuentoModal from '../../../layout/modal/AddDescuentoModal';
-
+import AddDescuentoModal2 from '../../../layout/modal/AddDescuentoModal2';
+import AplicarDescuentosSubproductos from '../../../layout/modal/AplicarDescuentosSubproductos';
+import EliminarDescuentosSubproductos from '../../../layout/modal/EliminarDescuentosSubproductos';
+  
 export const DescuentosIndexScreen = () => {
 
   const [products, setDescuentos] = useState([]);
+  const [descuentoUpdate, setdescuentoUpdate] = useState(null);
   const [option, setoption] = useState('');
   const navegate = useNavigate();
   const [filterSearch, setfilterSearch] = useState('');
   const [DescuentoMemory, setDescuentosMemory] = useState([]);
   const [showModalAtributo, setShowModalAtributo] = useState(false);
   const [showModalAtributoPublic, setShowModalAtributoPublic] = useState(false);
+  const [showModalAtributoremoveValue, setshowModalAtributoremoveValue] = useState(false);
+
   const effectRun = useRef(false);
   function oncloseCaracteristicas() {
-
     setShowModalAtributo(false)
+    setdescuentoUpdate(null);
+  }
+
+  function oncloseAtribute() {
+
+    setshowModalAtributoremoveValue(false)
 
   }
 
@@ -37,16 +45,40 @@ export const DescuentosIndexScreen = () => {
 
   }
 
-  function handleSaveCaracteristicas(value) {
+  async function handleSaveCaracteristicas(value) {
+
+    if (descuentoUpdate != null) {
+
+      await obtenerTodosLosproductos();
+      setdescuentoUpdate(null);
+            
+    }else{
+
+      setDescuentos((descuentos) => ([...descuentos, value ])); 
+    }
 
     console.log(value);
+    
+    setShowModalAtributo(false)
+   
+    toast.success("Se guardo el descuento con exito");
 
   }
 
   async function handleSavePublic() {
     setShowModalAtributoPublic(false)
+    toast.success("se aplicaron los descuento con exito");
+    setdescuentoUpdate(null)
 
-    await obtenerTodosLosproductos();
+
+  }
+
+  async function handleRemoveDescuento() {
+    setshowModalAtributoremoveValue(false)
+    toast.success("Se removieron los descuento con exito");
+    setdescuentoUpdate(null)
+
+
 
   }
 
@@ -86,35 +118,26 @@ export const DescuentosIndexScreen = () => {
       accessor: row => row,
       Cell: ({ value }) => {
 
-        if (value.status == 1 || value.status == 2 || value.status == 3) {
+        if (value.status == 1 ) {
           
+         
           return (
             <>  
-              <p>
-                <Link className='text-primary text-decoration-none hover-primary w-100' to={"/subproducts/edit/" + value.id}>Editar </Link>
-              </p>
-              <p>
-                <Link className='text-danger text-decoration-none hover-primary w-100' onClick={(e) => eliminarProducto(value.id)}>Inhabilitar </Link>
-              </p>
+            <div className="">
+
+                <Link className='text-primary text-decoration-none hover-primary w-100' onClick={(e) => updatedValue(value.id)} ><Edit/> </Link>
+                <Link className='text-success text-decoration-none hover-success w-100' onClick={(e) => updatedCantidadDescuento(value.id)} ><BadgePercent/> </Link>
+
+                <Link className='text-warning text-decoration-none hover-warning w-100' onClick={(e) => quitarDescuento(value.id)} ><BadgeMinus/> </Link>
+
+                <Link className='text-danger text-decoration-none hover-primary w-100' onClick={(e) => eliminarProducto(value.id)}><Trash/></Link>
+            </div>
             </>
         
           )
         }
 
-        if (value.status == 4) {
-
-          return (
-<>  
-              <p>
-                <Link className='text-success text-decoration-none hover-success w-100' onClick={(e) => HabilitarSubproducto(value.id)}>Habilitar </Link>
-              </p>
-              <p>
-                <Link className='text-danger text-decoration-none hover-primary w-100' onClick={(e) => eliminarPermanenteProducto(value.id)}>Eliminar </Link>
-              </p>
-            </>
-          )
-          
-        }
+       
 
        
 
@@ -125,34 +148,25 @@ export const DescuentosIndexScreen = () => {
     
   ], []);
 
-  async function HabilitarSubproducto(id){
+
+  function updatedCantidadDescuento(id){
+    setShowModalAtributoPublic(true)
+    setdescuentoUpdate(id);
+
+  }
+
+  function quitarDescuento(id){
+    setshowModalAtributoremoveValue(true)
+    setdescuentoUpdate(id);
+
+  }
+
+  function updatedValue(id){
+
+
     
-
-    try {
-      let token = localStorage.getItem("token");
-      console.log(id);
-      
-      const { data } = await axios.get(`${URLAPI}/SubProduct/getHability/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      // actualizar los datos
-      await obtenerTodosLosproductos()
-      
-     
-    } catch (error) {
-
-      let msgDefault = error.response.data.message ? error.response.data.message :"No se pudo habilitar este producto.";
-
-      
-      Swal.fire({
-        title: "Error",
-        text: msgDefault,
-        icon: "error"
-      });
-    }
+    setdescuentoUpdate(id);
+    setShowModalAtributo(true)
   }
 
   function eliminarProducto(id) {
@@ -160,33 +174,8 @@ export const DescuentosIndexScreen = () => {
 
 
     Swal.fire({
-      title: "¿Inhabilitar?",
-      text: "¿Desea inhabilitar este producto?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Si, inhabilitar!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // logica de programacion
-        eliminarSubproductoPorID(id)
-        Swal.fire({
-          title: "inhabilitado",
-          text: "Tu subproducto a sido inhabilitado.",
-          icon: "success"
-        });
-      }
-    });
-
-  }
-
-  function eliminarPermanenteProducto(id) {
-
-
-    Swal.fire({
-      title: "¿Eliminar permanentemente?",
-      text: "¿Desea eliminar este producto de forma permanente?",
+      title: "Eliminar?",
+      text: "¿Desea eliminar este descuento?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -195,48 +184,44 @@ export const DescuentosIndexScreen = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // logica de programacion
-        eliminarSubproductoDefinitivoPorID(id)
-        Swal.fire({
-          title: "Eliminado!",
-          text: "Tu subproducto a sido eliminado.",
-          icon: "success"
-        });
+        eliminarSubproductoPorID(id)
+       
       }
     });
 
   }
 
+  
 
-  async function eliminarSubproductoDefinitivoPorID(id) {
-    try {
-      let token = localStorage.getItem("token");
-      const { data } = await axios.delete(`${URLAPI}/SubProduct/getID/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      // actualizar los datos
-      await obtenerTodosLosproductos()
-    } catch (error) {
-
-    }
-  }
-
+  
 
   async function eliminarSubproductoPorID(id) {
     try {
 
       let token = localStorage.getItem("token");
-      const { data } = await axios.delete(`${URLAPI}/SubProduct/getById/${id}`, {
+      const { data } = await axios.delete(`${URLAPI}/descuentos/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
 
+      Swal.fire({
+        title: "Eliminado",
+        text: "Tu descuento a sido eliminado.",
+        icon: "success"
+      });
+
+
       // actualizar los datos
       await obtenerTodosLosproductos()
     } catch (error) {
+
+      
+      Swal.fire({
+        title: "Error",
+        text: "Ocurrio un error al eliminar el descuento.",
+        icon: "error"
+      })
 
     }
   }
@@ -264,16 +249,11 @@ export const DescuentosIndexScreen = () => {
       return 'Activo'
     }
 
-    if (value == '2') {
-      return 'Sin stock'
-    }
-
+    
     if (value == '0') {
       return 'Elimnado'
     }
-    if (value == '4') {
-      return 'Inactivo'
-    }
+    
   }
 
 
@@ -313,9 +293,8 @@ export const DescuentosIndexScreen = () => {
       console.log(data);
 
       setDescuentos(data)
-      setDescuentosMemory(data)
+      // setDescuentosMemory(data)
     
-      console.log(DescuentoMemory);
       
 
     } catch (error) {
@@ -351,6 +330,7 @@ export const DescuentosIndexScreen = () => {
 
   }, [])
 
+
   function filterValueFunc(e){
 
     let opt = e.target.value;
@@ -375,32 +355,7 @@ export const DescuentosIndexScreen = () => {
     
 
   }
-  function updateFilter(e){
-
-    let opt = e.target.value;
-    setoption(opt);
-
-    console.log("desde filter: "+DescuentoMemory);
-
-    if (opt == "sinfiltros") {
-      setDescuentos(DescuentoMemory)
-    }
-
-    if (opt == "descuentosActivos") {
-      let descuentoFilter = DescuentoMemory.filter(descuento => descuento.status == 1);
-      setDescuentos(descuentoFilter)
-
-    }
-    
-    if (opt == "descuentosInactivos") {
-      let descuentoFilter = DescuentoMemory.filter(descuento => descuento.status == 4);
-      setDescuentos(descuentoFilter)
-    }
-
-    
-
-  }
-
+  
 
   return (
     <>
@@ -425,12 +380,6 @@ export const DescuentosIndexScreen = () => {
 
 
 
-              <select class="form-select " value={option} style={{ width: "200px", background: "transparent" }} onChange={(e) => updateFilter(e)}>
-                <option selected>Filtrar por</option>
-                <option value="sinfiltros">Mostrar Todo</option>
-                <option value="descuentosActivos">Mis descuentos Activos</option>
-                <option value="descuentosInactivos">Mis descuentos Inactivos</option>
-              </select>
 
 
               <span class="text-secondary">Mis descuentos: {products.length}</span>
@@ -487,6 +436,15 @@ export const DescuentosIndexScreen = () => {
                     </tbody>
                   </table>
 
+                  {page.length == 0 ?<>
+                      
+                      <div className="d-flex flex-column align-items-center justify-content-center" style={{ height: "400px", width: "100%" }}>
+                          <Search size={64} className="text-secondary" />
+                          <h2 className="mt-3 fw-semibold">No hay contenido</h2>
+                          <p className="text-muted">Aqui apareceran tus descuentos que vayas creando.</p>
+                      </div>
+
+                    </> : null}
 
                  
 
@@ -526,8 +484,9 @@ export const DescuentosIndexScreen = () => {
     </Container >
 
 
-      <AddDescuentoModal show={showModalAtributo} onClose={() => oncloseCaracteristicas()} onSave={handleSaveCaracteristicas} />
-      {/* <PublicarSubProductos subproductos={DescuentoMemory}  show={showModalAtributoPublic} onClosevalue={() => onclosePublic()} onSave={handleSavePublic} toast={toast}  /> */}
+      <AddDescuentoModal2 show={showModalAtributo} onClose={() => oncloseCaracteristicas()} onSave={handleSaveCaracteristicas} id={descuentoUpdate}/>
+      <AplicarDescuentosSubproductos   show={showModalAtributoPublic} onClosevalue={() => onclosePublic()} onSave={handleSavePublic} toast={toast}  id={descuentoUpdate}  />
+      <EliminarDescuentosSubproductos   show={showModalAtributoremoveValue} onClosevalue={() => oncloseAtribute()} onSave={handleRemoveDescuento} toast={toast}  id={descuentoUpdate}  />
 
       <ToastContainer />
 

@@ -128,7 +128,7 @@ const MultipleImageUpload = ({ show, onHide, onSave, currentImage }) => {
               <input
                 type="file"
                 className="form-control"
-                accept="image/*"
+                accept=".jpg, .jpeg, .png" 
                 multiple
                 id='img'
                 onChange={handleFileSelect}

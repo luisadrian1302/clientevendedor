@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import './styles/ProductModification.css';
 import { Col, Container, Row } from 'react-bootstrap';
 import axios from 'axios';
-import { URLAPI } from '../../../url';
+import { URLAPI, URLAPI_SUBPRODUCT_PUBLIC, URLAPI_SUBPRODUCT_SELLER } from '../../../url';
 import ImageUploadModal from '../../layout/modal/ImageUploadModal';
 import Swal from 'sweetalert2';
 import "../../../styles/product.css"
@@ -45,23 +45,7 @@ export const ProductModification = () => {
 
     useEffect(() => {
 
-        async function traerCategorias() {
-            try {
-                let token = localStorage.getItem("token")
-                const { data } = await axios.get(URLAPI + "/categorias/getAllcategorias", {
-                    headers: {
-                        Authorization: "Bearer " + token
-                    }
-                })
-
-                setCategorias(data);
-            } catch (error) {
-
-                console.log("no se pudeo obtener las categorias");
-
-            }
-
-        }
+        
 
         async function traerProducto() {
             try {
@@ -71,13 +55,11 @@ export const ProductModification = () => {
                         Authorization: "Bearer " + token
                     }
                 })
-                console.log(data.subcategoria.categoria.id);
                 setproducto(data);
 
 
             } catch (error) {
 
-                console.log("no se pudeo obtener las categorias");
 
             }
 
@@ -86,7 +68,7 @@ export const ProductModification = () => {
         async function traersubProducto() {
             try {
                 let token = localStorage.getItem("token")
-                const { data } = await axios.get(URLAPI + "/SubProduct/getByProduct/" + id, {
+                const { data } = await axios.get(URLAPI_SUBPRODUCT_SELLER + "/getByProduct/" + id, {
                     headers: {
                         Authorization: "Bearer " + token
                     }
@@ -96,7 +78,6 @@ export const ProductModification = () => {
 
             } catch (error) {
 
-                console.log("no se pudeo obtener las subproductos", error);
 
             }
 
@@ -105,35 +86,89 @@ export const ProductModification = () => {
 
         traerProducto();
         traersubProducto();
-        traerCategorias();
+       
     }, [])
 
     useEffect(() => {
-        if (Object.entries(producto).length) {
+       
+        async function traerCategorias() {
+            try {
+                let token = localStorage.getItem("token")
+                const { data } = await axios.get(URLAPI + "/categorias/getAllcategorias", {
+                    headers: {
+                        Authorization: "Bearer " + token
+                    }
+                })
 
+                let isReturn = data.find(e => e.id == producto.subcategoria.categoria.id);
+                if (!isReturn) {
+                    data.push(producto.subcategoria.categoria)
+                }
 
-            setInformacionGeneral({
-                descripcion: producto.descripcionGeneral,
-                titular: producto.titular,
-                idCategoria: producto.subcategoria.categoria.id,
-                idsubCategoria: producto.subcategoria.id
-            })
+                setCategorias(data);                
 
+                setInformacionGeneral({
+                    descripcion: producto.descripcionGeneral,
+                    titular: producto.titular,
+                    idCategoria: producto.subcategoria.categoria.id,
+                    idsubCategoria: producto.subcategoria.id,
+                    marca: producto.marca
+                    
+                })
 
-            document.querySelector("#categoria").value = producto.subcategoria.categoria.id;
-            document.querySelector("#subcategoría").value = producto.subcategoria.id;
-            handleCategorias(producto.subcategoria.categoria.id)
-            setCurrentImage(URLAPI + "/product/image/" + producto.imagePortada);
-            setCurrentOldImage(URLAPI + "/product/image/" + producto.imagePortada)
+                
+                
+                setInformacionGeneral((element) => ({ ...element, idCategoria: producto.subcategoria.categoria.id }))
+                
+                document.querySelector("#categoria").value = producto.subcategoria.categoria.id;
+                setCurrentImage(URLAPI + "/product/image/" + producto.imagePortada);
+                setCurrentOldImage(URLAPI + "/product/image/" + producto.imagePortada)
 
-            if (subProducto.length > 0) {
-                document.querySelector("#categoria").setAttribute("disabled", "true");
-                document.querySelector("#subcategoría").setAttribute("disabled", "true");
+                if (subProducto.length > 0) {
+                    document.querySelector("#categoria").setAttribute("disabled", "true");
+                    document.querySelector("#subcategoría").setAttribute("disabled", "true");
+                }
+    
+
+            } catch (error) {
+
+                console.log( error);
+
             }
 
         }
-    }, [categorias])
+        async function traerSubCategorias() {
+            try {
+                let token = localStorage.getItem("token")
+                const {data} = await axios.get(URLAPI+"/subcategoria/getByIdCategoria/"+producto.subcategoria.categoria.id, {
+                    headers:{
+                        Authorization: "Bearer " + token
+                    }
+                })
+                console.log(data, id);
+                
+                let isReturn = data.find(e => e.id == producto.subcategoria.id);
+                if (!isReturn) {
+                    data.push(producto.subcategoria)
+                }
+                setsubCategorias(data);
+                document.querySelector("#subcategoría").value = producto.subcategoria.id;
 
+            } catch (error) {
+                
+                
+            }
+
+        }
+        traerSubCategorias()
+        traerCategorias();
+    }, [producto])
+
+    // useEffect(() => {
+    //     document.querySelector("#subcategoría").value = producto.subcategoria.id;
+      
+    // }, [subcategorias])
+    
 
     const handleChangeCategoria = (e) => {
         handleCategorias(e.target.value)
@@ -143,15 +178,31 @@ export const ProductModification = () => {
         setInformacionGeneral((element) => ({ ...element, idCategoria: value }))
 
 
-        let subcategorias = categorias.filter(el => el.id == value);
-        if (subcategorias.length) {
-
-            setsubCategorias(subcategorias[0].subcategorias);
-        } else {
-            setsubCategorias([])
-        }
+        getSubcategoriasById(value);
     }
 
+    function handleSubCategorias(value) {
+        setInformacionGeneral((element) => ({ ...element, idsubCategoria: value }))
+
+
+    }
+
+
+    const getSubcategoriasById = async (id)=> {
+        try {
+            let token = localStorage.getItem("token")
+            const {data} = await axios.get(URLAPI+"/subcategoria/getByIdCategoria/"+id, {
+                headers:{
+                    Authorization: "Bearer " + token
+                }
+            })
+            setsubCategorias(data);
+        } catch (error) {
+            
+            
+        }
+
+    }
     const handleSave = (file) => {
 
         setcroppedImageFile(new File(
@@ -242,9 +293,12 @@ export const ProductModification = () => {
 
         return (
             <img
-                src={URLAPI+"/SubProduct/image/"+jsonMulti[0]}
+                src={URLAPI_SUBPRODUCT_PUBLIC+"/image/"+jsonMulti[0]}
                 alt="64GB Storage"
                 className="img-fluid storage-image mb-3 image_subproduct"
+                style={{
+                    objectFit: "contain"
+                }}
             />
         )
     }
@@ -356,7 +410,7 @@ export const ProductModification = () => {
                                                 className="img-fluid rounded product-image"
                                             />
                                             <button className="btn change-image-btn"  onClick={() => setUPShowModal(true)}>
-                                                Cambiar imagen2 principal
+                                                Cambiar imagen principal
                                             </button>
                                         </div>
                                         {

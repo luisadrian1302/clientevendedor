@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-export default function CaracteristicasModal({ show, onClose, onSave, idCategoria , caracteristica, elementEdit}) {
+export default function CaracteristicasModal({ show, onClose, onSave, idProduct , caracteristica, elementEdit}) {
 
     const notify = () => toast.error("Solo se permite colocar 3 caracteristicas destacadas");
 
@@ -34,6 +34,7 @@ export default function CaracteristicasModal({ show, onClose, onSave, idCategori
     const [carroucelPage, setcarroucelPage] = useState(1);
 
     const [tipo_valor, setTipo_valor] = useState("");
+    const [idCategoria, setidCategoria] = useState(1);
 
    
     
@@ -59,10 +60,23 @@ export default function CaracteristicasModal({ show, onClose, onSave, idCategori
     useEffect(() => {
         async function traerCategorias() {
             try {
-                console.log(caracteristica, "en length");
+                
 
                 let token = localStorage.getItem("token")
-                let { data } = await axios.get(URLAPI + "/atributo/getBySubcategoria/" + idCategoria, {
+                console.log(idProduct);
+                
+                let { data: datos } = await axios.get(URLAPI + "/product/getVendedor/" + idProduct, {
+                    headers: {
+                        Authorization: "Bearer " + token
+                    }
+                })
+                console.log(datos);
+                
+
+
+
+
+                let { data } = await axios.get(URLAPI + "/atributo/getBySubcategoria/" + datos.subcategoria.id, {
                     headers: {
                         Authorization: "Bearer " + token
                     }
@@ -71,9 +85,7 @@ export default function CaracteristicasModal({ show, onClose, onSave, idCategori
 
                 let memoryData = data;
                 let filtro = [];
-                // fitrar la caracteristica
-
-                
+                // fitrar la caracteristica         
 
                 if (caracteristica.length) {
                     
@@ -267,10 +279,9 @@ export default function CaracteristicasModal({ show, onClose, onSave, idCategori
                             <select name="id_atributo" id="" className="form-control me-2"  value={formDataCaracteristica.id_atributo} onChange={obtenerAtributo} >
                                 <option value="">seleccione el atributo</option>
                                 {atributos.map((e, i) => (
-                                    <option value={e.id} key={i} >{e.nombre}, tipo: {e.tipoPropiedad}</option>
+                                    <option value={e.id} key={i} >{e.nombre}, tipo: {e.tipoPropiedad} <div className=""></div> </option>
                                 ))}
                             </select>
-                            <Plus className="edit-icon" size={16} onClick={() => addAtributo(2)} />
 
 
                         </div>

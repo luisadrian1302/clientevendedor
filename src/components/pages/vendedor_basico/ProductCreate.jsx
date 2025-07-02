@@ -59,24 +59,39 @@ export const ProductCreate = () => {
 
       traerCategorias();
     }, [])
+
+
+    const getSubcategoriasById = async (id)=> {
+        try {
+            let token = localStorage.getItem("token")
+            const {data} = await axios.get(URLAPI+"/subcategoria/getByIdCategoria/"+id, {
+                headers:{
+                    Authorization: "Bearer " + token
+                }
+            })
+            setsubCategorias(data);
+        } catch (error) {
+            
+            console.log(error);
+            
+        }
+
+    }
+
     
-    const handleChangeCategoria = (e) =>{
+    const handleChangeCategoria = async (e) =>{
 
         setInformacionGeneral((element) => ({...element,idCategoria:  e.target.value}))
 
         console.log(e.target.value, categorias);
-        
-        let subcategorias = categorias.filter(el => el.id == e.target.value);
-        if (subcategorias.length) {
-            
-            setsubCategorias(subcategorias[0].subcategorias);
-        }else{
-            setsubCategorias([])
-        }
+        await getSubcategoriasById(e.target.value);
+       
 
 
     }
 
+
+    
     const handleSave = (file) => {
 
         setcroppedImageFile(new File(
@@ -132,6 +147,7 @@ export const ProductCreate = () => {
 
 
         formdata.append("titular", inforacionGeneral.titular );
+        formdata.append("marca", inforacionGeneral.marca != "" ? inforacionGeneral.marca : "");
         formdata.append("descripcion", inforacionGeneral.descripcion );
         formdata.append("categoriaid", inforacionGeneral.idCategoria );
         formdata.append("subcategoriaid", inforacionGeneral.idsubCategoria );
@@ -199,7 +215,7 @@ export const ProductCreate = () => {
                                         <div className="edit-group">
                                             <p className="product-description" style={{width: "100%"}}>
                                                 <input type="text" className='non-input-style' value={inforacionGeneral.descripcion} 
-                                                    onChange={(event) => setInformacionGeneral((e) => ({...e, descripcion: event.target.value }))} placeholder={"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation"}
+                                                    onChange={(event) => setInformacionGeneral((e) => ({...e, descripcion: event.target.value }))} placeholder={"Coloque su decripción"}
                                                     />
 
                                             </p>
@@ -215,11 +231,6 @@ export const ProductCreate = () => {
                                                 onChange={(e) => setInformacionGeneral(  (info) =>    ({...info, marca: e.target.value   }))}
 
                                             />
-                                        </div>
-
-                                        <div className="approval-status mb-3">
-                                            <span className="status-label">Estado de aprobación:</span>
-                                            <span className="status-value">Sin aprobar</span>
                                         </div>
 
                                         <div className="mb-3">

@@ -20,3 +20,24 @@ export const verificarVendedor = async (token) => {
         
     }
 }
+
+
+export const verificarUser = async (token) => {
+    try {        
+        // const autor =await clienteAxios.post("/autor", datos);
+        const data = await axios.get(`${URLAPI}/users/example`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        const usuarioDatos =await data.data;
+        // dispatch(registrar())
+        return true;
+    } catch (error) {
+        console.log(error);
+        
+        return false;
+
+        
+    }
+}

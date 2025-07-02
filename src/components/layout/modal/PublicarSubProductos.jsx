@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { URLAPI } from "../../../url";
+import { URLAPI, URLAPI_SUBPRODUCT_PUBLIC, URLAPI_SUBPRODUCT_SELLER } from "../../../url";
 import '../../../styles/subproduct.css'
 import { Download, Pencil, Plus } from "lucide-react";
 import { TipoAtributo } from "./TipoAtributo";
@@ -8,6 +8,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { ShowAtributes } from "../../pages/vendedor_basico/subproductos_components/showAtributes";
 import Swal from "sweetalert2";
+import { sendMessage } from "../../../webSockets/connect";
+import { useSelector } from "react-redux";
 
 
 export default function PublicarSubProductos({ show, onClosevalue, onSave, subproductos = [], toast }) {
@@ -19,7 +21,10 @@ export default function PublicarSubProductos({ show, onClosevalue, onSave, subpr
         id_producto: "",
 
     });
+  const { userData } = useSelector(re => re.AuthReducer);
 
+
+    
     const [idToast, setIdToast] = useState(0);
     const navegate = useNavigate();
     const [carroucelPage, setcarroucelPage] = useState(1);
@@ -40,7 +45,7 @@ export default function PublicarSubProductos({ show, onClosevalue, onSave, subpr
 
             try {
                 let token = localStorage.getItem("token");
-                const { data } = await axios.get(`${URLAPI}/SubProduct/getByUserActive`, {
+                const { data } = await axios.get(`${URLAPI_SUBPRODUCT_SELLER}/getByUserActive`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -98,7 +103,7 @@ export default function PublicarSubProductos({ show, onClosevalue, onSave, subpr
                 "ids": JSON.stringify(ids)
             }
 
-            const {data, status} = await axios.post(`${URLAPI}/SubProduct/publicarProducto`, payload, {
+            const {data, status} = await axios.post(`${URLAPI_SUBPRODUCT_SELLER}/publicarProducto`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -106,7 +111,7 @@ export default function PublicarSubProductos({ show, onClosevalue, onSave, subpr
 
 
             if (status == "200") {
-             
+                sendMessage({ content: 'updatePublic' } );
                 
                 
                 await onSave();
@@ -138,7 +143,7 @@ export default function PublicarSubProductos({ show, onClosevalue, onSave, subpr
     
             return (
                 <img
-                    src={URLAPI+"/SubProduct/image/"+jsonMulti[0]}
+                    src={URLAPI_SUBPRODUCT_PUBLIC+"/image/"+jsonMulti[0]}
                     alt="64GB Storage"
                     className="img-fluid storage-image mb-3 image_subproduct"
                 />

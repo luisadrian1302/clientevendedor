@@ -1,5 +1,5 @@
 import { Button, Card } from "react-bootstrap";
-import { URLAPI } from "../../../url";
+import { URLAPI, URLAPI_SUBPRODUCT_SELLER } from "../../../url";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { ShowAtributesProduct } from "../../pages/vendedor_basico/subproductos_components/showAtributesProduct";
@@ -21,7 +21,7 @@ export const ProductCard = ({ imagePortada, titular, id ,descripcionGeneral,subp
 
       async function obtenerSubproductos(){
         let token = localStorage.getItem("token")
-        let { data } = await axios.get(URLAPI + "/SubProduct/getAtributos/" + id, {
+        let { data } = await axios.get(URLAPI_SUBPRODUCT_SELLER + "/getAtributos/" + id, {
             headers: {
                 Authorization: "Bearer " + token
             }

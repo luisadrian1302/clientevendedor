@@ -42,7 +42,8 @@ export const ShowItems = ({ caracteristicas = [], setCaracteristica, onUpdate })
                     {e.tipo == "color" ? <>
                         <p className='mb-1 mt-2'>{e.propiedad}</p>
                         <div className="row m-0 p-0" style={{ alignItems: "center" }}>
-                            <div className='showItems' style={{ backgroundColor: e.valor }}>
+                            <div className='showItems' style={{ backgroundColor: e.valor }} 
+                            onClick={(e) => getDataUpdate(i)}>
 
                             </div>
                             {remove == true ? showItemRemove(i) : null}

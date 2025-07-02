@@ -2,3 +2,26 @@ body{
     overflow-x: hidden;
 }
 
+#isNotification{
+
+    
+    height: 10px;
+    width: 10px;
+    position: absolute;
+    background: #1a8f59;
+    border-radius: 50%;
+    top: 0;
+    right: 0;
+}
+#bell{
+    position: relative;
+}
+
+
+body {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100;
+  }

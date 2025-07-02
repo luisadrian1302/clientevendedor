@@ -1,0 +1,169 @@
+/* ProductBanner.css */
+
+.product-banner {
+    position: relative;
+    /* background-color: #0307f3; Fondo rojo brillante */
+    color: white;
+    overflow: hidden;
+    height: 450px;
+    width: 100%;
+  }
+  
+  .banner-content {
+    position: relative;
+    height: 100%;
+    padding: 0 40px;
+  }
+  
+  /* Estilos de la imagen del producto */
+  .product-image-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .product-image {
+    max-height: 400px;
+    object-fit: contain;
+  }
+  
+ 
+  
+  /* Estilos del texto */
+  .product-info {
+    padding: 20px;
+  }
+  
+  .product-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .product-description {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Botón de oferta */
+  .offer-button {
+    background-color: #ffbe00 !important; /* Amarillo dorado */
+    border: none !important;
+    color: #333 !important;
+    font-weight: 600 !important;
+    padding: 8px 24px !important;
+    border-radius: 25px !important;
+    transition: all 0.3s ease;
+  }
+  
+  .offer-button:hover {
+    background-color: #ffd54f !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Flechas de navegación */
+  .nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 2rem;
+    font-weight: 300;
+    z-index: 10;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.2s ease;
+  }
+  
+  .nav-arrow:hover {
+    color: white;
+  }
+  
+  .left-arrow {
+    left: 10px;
+  }
+  
+  .right-arrow {
+    right: 10px;
+  }
+  
+  /* Indicadores de posición */
+  .banner-indicators {
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .indicator-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .indicator-dot.active {
+    background-color: white;
+    transform: scale(1.2);
+  }
+  
+  /* Animación para el cambio de banners */
+  .row {
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Estilos responsivos */
+  @media (max-width: 768px) {
+    .product-banner {
+      height: auto;
+      padding: 20px 0;
+    }
+    
+    .product-image {
+      max-height: 150px;
+      margin-bottom: 15px;
+    }
+    
+    .product-title {
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    
+    .product-description {
+      font-size: 1rem;
+      text-align: center;
+    }
+    
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+    }
+    
+    .banner-indicators {
+      bottom: 5px;
+    }
+  }

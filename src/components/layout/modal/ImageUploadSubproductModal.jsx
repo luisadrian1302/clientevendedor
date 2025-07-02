@@ -131,7 +131,7 @@ const ImageUploadSubproductModal = ({ show, onHide, onSave, currentImage }) => {
                   <ReactCrop
                     crop={crop}
                     onChange={(c) => setCrop(c)}
-                    aspect={10 / 9}
+                   
                   >
                     <img
                       ref={imgRef}

@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { AlignLeft, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, MoveLeft, PlusCircle, Upload } from 'lucide-react';
+import { AlignLeft, ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, MoveLeft, PlusCircle, Search, Upload } from 'lucide-react';
 import React, { useEffect, useRef } from 'react'
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { data, Link, useNavigate } from 'react-router-dom';
 import { usePagination, useTable } from 'react-table';
-import { URLAPI } from '../../../../url';
+import { URLAPI, URLAPI_SUBPRODUCT_SELLER } from '../../../../url';
 import { useState } from 'react';
 import AddSubproductModal from '../../../layout/modal/AddSubproductModal';
 import Swal from 'sweetalert2';
@@ -13,6 +13,7 @@ import PublicarSubProductos from '../../../layout/modal/PublicarSubProductos';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { ToastContainer, toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 export const SubproductIndexScreen = () => {
 
@@ -36,9 +37,9 @@ export const SubproductIndexScreen = () => {
 
   }
 
-  function handleSaveCaracteristicas(value) {
 
-    console.log(value);
+
+  function handleSaveCaracteristicas(value) {
 
   }
 
@@ -141,7 +142,7 @@ export const SubproductIndexScreen = () => {
       let token = localStorage.getItem("token");
       console.log(id);
       
-      const { data } = await axios.get(`${URLAPI}/SubProduct/getHability/${id}`, {
+      const { data } = await axios.get(`${URLAPI_SUBPRODUCT_SELLER}/getHability/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -219,7 +220,7 @@ export const SubproductIndexScreen = () => {
   async function eliminarSubproductoDefinitivoPorID(id) {
     try {
       let token = localStorage.getItem("token");
-      const { data } = await axios.delete(`${URLAPI}/SubProduct/getID/${id}`, {
+      const { data } = await axios.delete(`${URLAPI_SUBPRODUCT_SELLER}/getID/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -237,7 +238,7 @@ export const SubproductIndexScreen = () => {
     try {
 
       let token = localStorage.getItem("token");
-      const { data } = await axios.delete(`${URLAPI}/SubProduct/getById/${id}`, {
+      const { data } = await axios.delete(`${URLAPI_SUBPRODUCT_SELLER}/getById/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -348,11 +349,24 @@ export const SubproductIndexScreen = () => {
     usePagination
   );
 
+  const { isUpdateProduct } = useSelector(re => re.notificationsReducer);
+
+  useEffect(() => {
+    setProduct([]);
+    setProductMemory([]);
+
+    console.log("obteniendo productos de nuevo.....");
+    
+    obtenerTodosLosproductos()
+  }, [isUpdateProduct])
+  
+
+
   async function obtenerTodosLosproductos() {
 
     try {
       let token = localStorage.getItem("token");
-      const { data } = await axios.get(`${URLAPI}/SubProduct/getByUser`, {
+      const { data } = await axios.get(`${URLAPI_SUBPRODUCT_SELLER}/getByUser`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -371,10 +385,6 @@ export const SubproductIndexScreen = () => {
 
 
     }
-
-
-
-
   }
 
   useEffect(() => {
@@ -414,11 +424,52 @@ export const SubproductIndexScreen = () => {
         return element;
       }
     })
-
+    filterSelect(filterValue);
     
 
+  }
+  function filterTextKey(productsFilter = []){
+    let opt = document.querySelector("#filterText").value;
+    let filterValue = productsFilter.filter(element => {
+
+      if (element.titular.includes(opt) || element.descripcionGeneral.includes(opt) ||  
+      parseFloat(element.precio).toString().includes(opt)) {
+        return element;
+      }
+    })
     setProduct(filterValue);
 
+
+  }
+
+  function filterSelect(productsFilterMemory = []){
+    let opt = document.querySelector("#filterSelect").value;
+
+    if (opt == "sinfiltros") {
+      setProduct(productsFilterMemory)
+    }
+
+    if (opt == "productosActivos") {
+      let productsFilter = productsFilterMemory.filter(product => product.status == 1);
+      setProduct(productsFilter)
+    }
+
+    if (opt == "productosInactivos") {
+      let productsFilter = productsFilterMemory.filter(product => product.status == 4);
+      setProduct(productsFilter)
+    }
+
+    if (opt == "SinStock") {
+      let productsFilter = productsFilterMemory.filter(product => product.status == 3);
+      setProduct(productsFilter)
+
+    }
+
+    if (opt == "pendiente") {
+      let productsFilter = productsFilterMemory.filter(product => product.status == 2);
+      setProduct(productsFilter)
+
+    }
     
 
   }
@@ -435,23 +486,25 @@ export const SubproductIndexScreen = () => {
 
     if (opt == "productosActivos") {
       let productsFilter = productsMemory.filter(product => product.status == 1);
-      setProduct(productsFilter)
-
+      filterTextKey(productsFilter);
     }
     
     if (opt == "productosInactivos") {
       let productsFilter = productsMemory.filter(product => product.status == 4);
-      setProduct(productsFilter)
+      filterTextKey(productsFilter);
+
     }
 
     if (opt == "SinStock") {
       let productsFilter = productsMemory.filter(product => product.status == 3);
-      setProduct(productsFilter)
+      filterTextKey(productsFilter);
+
     }
 
     if (opt == "pendiente") {
       let productsFilter = productsMemory.filter(product => product.status == 2);
-      setProduct(productsFilter)
+      filterTextKey(productsFilter);
+
     }
 
 
@@ -475,13 +528,15 @@ export const SubproductIndexScreen = () => {
                   type="search"
                   class="form-control"
                   placeholder="Buscar"
+                  id="filterText"
                   onChange={(e) => filterValueFunc(e)}
                 />
               </div>
 
 
 
-              <select class="form-select " value={option} style={{ width: "200px", background: "transparent" }} onChange={(e) => updateFilter(e)}>
+              <select class="form-select " value={option} style={{ width: "200px", background: "transparent" }}
+               onChange={(e) => updateFilter(e)}  id="filterSelect">
                 <option selected>Filtrar por</option>
                 <option value="sinfiltros">MostrarTodo</option>
                 <option value="productosActivos">Productos Activos</option>
@@ -542,10 +597,22 @@ export const SubproductIndexScreen = () => {
                           </tr>
                         );
                       })}
+
+                     
                     </tbody>
+
+                   
                   </table>
 
+                  {page.length == 0 ?<>
+                      
+                      <div className="d-flex flex-column align-items-center justify-content-center" style={{ height: "400px", width: "100%" }}>
+                          <Search size={64} className="text-secondary" />
+                          <h2 className="mt-3 fw-semibold">No hay contenido</h2>
+                          <p className="text-muted">Aqui apareceran tus subproductos que vayas creando.</p>
+                      </div>
 
+                    </> : null}
                  
 
                   <div className='row m-0 p-0' style={{justifyContent: "space-between"}}>

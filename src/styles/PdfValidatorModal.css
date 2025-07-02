@@ -1,0 +1,58 @@
+/* Archivo: PdfValidatorModal.css */
+.pdf-validator-container {
+    margin: 20px;
+  }
+  
+  .pdf-validator-modal .modal-content {
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pdf-validator-modal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .pdf-validator-modal .modal-title {
+    font-weight: 600;
+    color: #212529;
+  }
+  
+  .pdf-file-input {
+    padding: 10px;
+    border: 1px dashed #ced4da;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+  
+  .pdf-file-input:hover {
+    border-color: #6c757d;
+    background-color: #f1f3f5;
+  }
+  
+  .pdf-file-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #80bdff;
+  }
+  
+  .pdf-validator-modal .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  .pdf-validator-modal .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+  }
+  
+  .pdf-validator-modal .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+  
+  .pdf-validator-modal .btn-secondary:hover {
+    background-color: #5c636a;
+    border-color: #565e64;
+  }

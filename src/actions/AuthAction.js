@@ -125,16 +125,25 @@ export const loginUser = (datos, navigation) => {
 
             if (autor.data) {
                 Swal.fire({
-                    title: 'Conrrecto',
-                    text: 'Inicio sesion correctamente',
+                    title: 'Correcto',
+                    text: 'Inicio sesión correctamente',
                     icon: 'success',
                     confirmButtonText: 'Aceptar',
                   }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
 
                     localStorage.setItem("token", autor.data.token);
+                    localStorage.setItem("email", autor.data.username);
                     dispatch(iniciarSesion(autor.data.token, autor.data));
-                    navigation("/")
+
+                    let route = localStorage.getItem("route");
+                    if (route) {
+                        
+                        navigation(route);
+                    }else{
+
+                        navigation("/")
+                    }
                   });
             }else{
 
@@ -197,6 +206,7 @@ export const cerrarSesionAuth = (navigate) => {
             
             
             localStorage.removeItem("token");
+            localStorage.removeItem("email");
             dispatch(cerrarSesion());
             navigate("/")
         
